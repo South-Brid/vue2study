@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import App from '../App.vue'
 import Login from '@/views/login/index.vue'
 import Layout from '@/views/layout/index.vue'
 import Myorder from '@/views/myorder/index.vue'
@@ -16,30 +15,18 @@ import LayoutUser from '@/views/layout/user.vue'
 Vue.use(VueRouter)
 const router = new VueRouter({
   routes: [
-    { path: '/', component: App },
-    { path: '/login', component: Login },
     {
-      path: '/layout',
+      path: '/',
+      redirect: '/home',
       component: Layout,
       children: [
-        {
-          path: '/cart',
-          component: LayoutCart
-        },
-        {
-          path: '/category',
-          component: LayoutCategory
-        },
-        {
-          path: '/home',
-          component: LayoutHome
-        },
-        {
-          path: '/user',
-          component: LayoutUser
-        }
+        { path: '/cart', component: LayoutCart },
+        { path: '/category', component: LayoutCategory },
+        { path: '/home', component: LayoutHome },
+        { path: '/user', component: LayoutUser }
       ]
     },
+    { path: '/login', component: Login },
     { path: '/myorder', component: Myorder },
     { path: '/pay', component: Pay },
     // 为了确认商品是谁，这里使用动态路由传参,在路由中携带id

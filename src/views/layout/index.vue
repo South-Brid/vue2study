@@ -1,13 +1,11 @@
 <template>
 <div>
-  <div>
-    我是layout的占位空间
-  </div>
-  <van-tabbar v-model="active" active-color="#fc1e1e" inactive-color="#0a0a0c">
-    <van-tabbar-item icon="wap-home-o">首页</van-tabbar-item>
-    <van-tabbar-item icon="apps-o">分类页</van-tabbar-item>
-    <van-tabbar-item icon="shopping-cart-o">购物车</van-tabbar-item>
-    <van-tabbar-item icon="contact-o">我的</van-tabbar-item>
+  <router-view></router-view>
+  <van-tabbar route v-model="active" active-color="#fc1e1e" inactive-color="#0a0a0c">
+    <van-tabbar-item replace to="/home" icon="wap-home-o">首页</van-tabbar-item>
+    <van-tabbar-item replace to="/category" icon="apps-o">分类页</van-tabbar-item>
+    <van-tabbar-item replace to="/cart" icon="shopping-cart-o">购物车</van-tabbar-item>
+    <van-tabbar-item replace to="/user" icon="contact-o">我的</van-tabbar-item>
   </van-tabbar>
 </div>
 </template>
