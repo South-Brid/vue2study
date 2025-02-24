@@ -1,6 +1,6 @@
 import Vue from 'vue'
-import { Button, Checkbox, CheckboxGroup, Tabbar, TabbarItem, NavBar } from 'vant'
-
+import { Button, Checkbox, CheckboxGroup, Tabbar, TabbarItem, NavBar, Toast } from 'vant'
+Vue.use(Toast)
 Vue.use(Tabbar)
 Vue.use(TabbarItem)
 Vue.use(Button)

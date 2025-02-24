@@ -27,7 +27,6 @@
 
 <script>
 import loginApi from '@/api/login'
-
 export default {
   name: 'LoginIndex',
   data () {
@@ -48,6 +47,7 @@ export default {
       const { data: { base64, key } } = await loginApi.getPicCode()
       this.picUrl = base64
       this.picKey = key
+      this.$toast.success('获取成功')
     }
   }
 }
