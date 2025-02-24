@@ -12,8 +12,8 @@
           <input class="inp" maxlength="11" placeholder="请输入手机号码" type="text">
         </div>
         <div class="form-item">
-          <input class="inp" maxlength="5" placeholder="请输入图形验证码" type="text">
-          <img src="@/assets/code.png" alt="">
+          <input class="inp" maxlength="5" placeholder="请输入图形验证码" type="text" v-model="picCode">
+          <img  v-if="picUrl" :src="picUrl" alt="" @click="getPicCode">
         </div>
         <div class="form-item">
           <input class="inp" placeholder="请输入短信验证码" type="text">
@@ -30,13 +30,24 @@ import request from '@/utils/request'
 
 export default {
   name: 'LoginIndex',
-  async created () {
-    const res = await request.get('/captcha/image')
-    console.log(res)
+  data () {
+    return {
+      picCode: '', // 存储用户输入的图片验证码
+      picKey: '', // 存储验证码的唯一标识
+      picUrl: '' // 存储渲染的图片地址
+    }
+  },
+  created () {
+    this.getPicCode()
   },
   methods: {
     onClickLeft () {
       this.$router.go(-1)
+    },
+    async getPicCode () {
+      const { data: { base64, key } } = await request.get('/captcha/image')
+      this.picUrl = base64
+      this.picKey = key
     }
   }
 }
