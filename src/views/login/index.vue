@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import request from '@/utils/request'
+import loginApi from '@/api/login'
 
 export default {
   name: 'LoginIndex',
@@ -45,7 +45,7 @@ export default {
       this.$router.go(-1)
     },
     async getPicCode () {
-      const { data: { base64, key } } = await request.get('/captcha/image')
+      const { data: { base64, key } } = await loginApi.getPicCode()
       this.picUrl = base64
       this.picKey = key
     }
