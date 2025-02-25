@@ -17,7 +17,9 @@
         </div>
         <div class="form-item">
           <input class="inp" placeholder="请输入短信验证码" type="text">
-          <button>获取验证码</button>
+          <button @click="getCode">
+            {{ second === totalSecond ? '获取验证码' : second + '秒后获取'}}
+          </button>
         </div>
       </div>
       <div class="login-btn">登录</div>
@@ -33,22 +35,40 @@ export default {
     return {
       picCode: '', // 存储用户输入的图片验证码
       picKey: '', // 存储验证码的唯一标识
-      picUrl: '' // 存储渲染的图片地址
+      picUrl: '', // 存储渲染的图片地址
+      totalSecond: 60, // 倒计时总描述
+      second: 60, // 当前秒数
+      timer: null // 定时器id
     }
   },
   created () {
     this.getPicCode()
   },
   methods: {
-    onClickLeft () {
+    onClickLeft () { // 回到首页
       this.$router.go(-1)
     },
-    async getPicCode () {
+    async getPicCode () { // 获取图片验证码
       const { data: { base64, key } } = await loginApi.getPicCode()
       this.picUrl = base64
       this.picKey = key
       this.$toast.success('获取成功')
+    },
+    getCode () { // 获取短信验证码
+      if (!this.timer && this.second === this.totalSecond) {
+        this.timer = setInterval(() => {
+          this.second--
+          if (this.second === 0) {
+            clearInterval(this.timer)
+            this.timer = null
+            this.second = this.totalSecond
+          }
+        }, 1000)
+      }
     }
+  },
+  destroyed () {
+    clearInterval(this.timer) // 页面析构清除定时器
   }
 }
 </script>
@@ -56,7 +76,6 @@ export default {
 <style scoped lang="less">
 .container {
   padding: 49px 29px;
-
   .title {
     margin-bottom: 20px;
     h3 {
