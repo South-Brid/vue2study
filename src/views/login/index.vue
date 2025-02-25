@@ -9,10 +9,10 @@
       </div>
       <div class="form">
         <div class="form-item">
-          <input class="inp" maxlength="11" placeholder="请输入手机号码" type="text">
+          <input v-model="mobile" class="inp" maxlength="11" placeholder="请输入手机号码" type="text">
         </div>
         <div class="form-item">
-          <input class="inp" maxlength="5" placeholder="请输入图形验证码" type="text" v-model="picCode">
+          <input v-model="picCode" class="inp" maxlength="5" placeholder="请输入图形验证码" type="text">
           <img  v-if="picUrl" :src="picUrl" alt="" @click="getPicCode">
         </div>
         <div class="form-item">
@@ -38,23 +38,30 @@ export default {
       picUrl: '', // 存储渲染的图片地址
       totalSecond: 60, // 倒计时总描述
       second: 60, // 当前秒数
-      timer: null // 定时器id
+      timer: null, // 定时器id
+      mobile: '' // 手机号
     }
   },
   created () {
     this.getPicCode()
   },
   methods: {
-    onClickLeft () { // 回到首页
+    // 回到首页
+    onClickLeft () {
       this.$router.go(-1)
     },
-    async getPicCode () { // 获取图片验证码
+    // 获取图片验证码
+    async getPicCode () {
       const { data: { base64, key } } = await loginApi.getPicCode()
       this.picUrl = base64
       this.picKey = key
       this.$toast.success('获取成功')
     },
-    getCode () { // 获取短信验证码
+    // 获取短信验证码
+    getCode () {
+      if (!this.vaildFn()) {
+        return false
+      }
       if (!this.timer && this.second === this.totalSecond) {
         this.timer = setInterval(() => {
           this.second--
@@ -64,6 +71,17 @@ export default {
             this.second = this.totalSecond
           }
         }, 1000)
+      }
+    },
+    // 校验手机号和图形验证码
+    vaildFn () {
+      if (!/^1[3-9]\d{9}$/.test(this.mobile)) { // 验证手机号
+        this.$toast.fail('请输入正确格式手机号')
+        return false
+      }
+      if (!/^\w{4}$/.test(this.picCode)) { // 验证图形验证码
+        this.$toast.fail('请输入正确格式验证码')
+        return false
       }
     }
   },
