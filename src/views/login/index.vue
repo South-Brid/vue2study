@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import loginApi from '@/api/login'
+import { getPicCode, getMsgCode } from '@/api/login'
 export default {
   name: 'LoginIndex',
   data () {
@@ -52,17 +52,21 @@ export default {
     },
     // 获取图片验证码
     async getPicCode () {
-      const { data: { base64, key } } = await loginApi.getPicCode()
+      const { data: { base64, key } } = await getPicCode()
       this.picUrl = base64
       this.picKey = key
-      this.$toast.success('获取成功')
     },
     // 获取短信验证码
-    getCode () {
+    async getCode () {
+      // 验证用用户输入格式
       if (!this.vaildFn()) {
-        return false
+        return
       }
       if (!this.timer && this.second === this.totalSecond) {
+        // 获取短信验证码请求
+        const res = await getMsgCode(this.picCode, this.picKey, this.mobile)
+        this.$toast.success('短信发送成功')
+        console.log('短信请求', res)
         this.timer = setInterval(() => {
           this.second--
           if (this.second === 0) {
@@ -83,6 +87,7 @@ export default {
         this.$toast.fail('请输入正确格式验证码')
         return false
       }
+      return true
     }
   },
   destroyed () {
