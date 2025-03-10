@@ -19,6 +19,7 @@ request.interceptors.request.use(function (config) {
 request.interceptors.response.use(function (response) {
   const res = response.data
   if (res.status !== 200) {
+    console.log("登录错误信息",res)
     Toast.fail(res.message) // 打印错误信息
     return Promise.reject('请求失败')
   }

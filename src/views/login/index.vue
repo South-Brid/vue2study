@@ -64,6 +64,7 @@ export default {
       if (!this.timer && this.second === this.totalSecond) {
         // 获取短信验证码请求
         const res = await getMsgCode(this.picCode, this.picKey, this.mobile)
+        console.log('验证码状态',res)
         this.$toast.success('短信发送成功')
         this.timer = setInterval(() => {
           this.second--
@@ -91,9 +92,10 @@ export default {
       if (!this.vaildFn()) { return }
       if (!/^\d{6}$/.test(this.msgCode)) { return }
       const res = await login(this.msgCode, this.mobile)
+      console.log('登录状态',res)
       this.$toast.success('登陆成功')
       this.$store.commit('user/setUserInfo', res.data) // 存入vuex中
-
+      console.log(res)
       await this.$router.push({ path: '/' })  // 跳转到首页
     }
   },
