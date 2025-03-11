@@ -1,4 +1,4 @@
-import {getInfo,setInfo} from '@/utils/storage'
+import { getInfo,setInfo } from '@/utils/storage'
 
 const state = { // 读取的时候直接读取
   userInfo: getInfo()

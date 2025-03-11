@@ -8,10 +8,13 @@ const request = axios.create({
 
 // 添加请求拦截器
 request.interceptors.request.use(function (config) {
-  // 在发送请求之前做些什么
+  Toast.loading({ // Toast 默认是单例模式
+    message:'加载中...',
+    forbidClick: true,
+    duration: 0 // 加载不会自动消失
+  })
   return config
 }, function (error) {
-  // 对请求错误做些什么
   return Promise.reject(error)
 })
 
@@ -22,10 +25,11 @@ request.interceptors.response.use(function (response) {
     console.log("登录错误信息",res)
     Toast.fail(res.message) // 打印错误信息
     return Promise.reject('请求失败')
+  } else {
+    Toast.clear()
   }
   return res
 }, function (error) {
-  // 对响应错误做点什么
   return Promise.reject(error)
 })
 
