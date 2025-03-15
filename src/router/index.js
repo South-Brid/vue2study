@@ -31,7 +31,7 @@ const router = new VueRouter({
     { path: '/myorder', component: Myorder },
     { path: '/pay', component: Pay },
     // 为了确认商品是谁，这里使用动态路由传参,在路由中携带id
-    { path: '/prodetail:id', component: Prodetail },
+    { path: '/prodetail/:id', component: Prodetail },
     { path: '/search', component: Search },
     { path: '/searchlist', component: SearchList }
   ]

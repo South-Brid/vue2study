@@ -1,9 +1,6 @@
 import Vue from 'vue'
-import { Button, Checkbox, CheckboxGroup, Tabbar, TabbarItem, NavBar, Toast } from 'vant'
-Vue.use(Toast)
-Vue.use(Tabbar)
-Vue.use(TabbarItem)
-Vue.use(Button)
-Vue.use(Checkbox)
-Vue.use(CheckboxGroup)
-Vue.use(NavBar)
+import Vant from 'vant'
+import 'vant/lib/index.css'  // 引入全部样式
+// 注意全导入babel.config.js问题
+
+Vue.use(Vant)
