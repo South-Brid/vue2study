@@ -5,12 +5,12 @@ import index from 'vuex'
 
 export default {
   name: 'LayoutHome',
+  components: { GoodsItem },
   computed: {
     index () {
       return index
     }
   },
-  components: { GoodsItem },
   data() {
     return {
       bannerList:[],
@@ -24,7 +24,6 @@ export default {
     this.bannerList = dataArray[1].data
     this.navList = dataArray[3].data
     this.proList = dataArray[6].data
-    console.log('商品列表',this.proList)
   }
 }
 </script>
