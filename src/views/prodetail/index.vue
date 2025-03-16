@@ -12,7 +12,9 @@ export default {
         list:[],
         total:0,
       },
-      defaultImg:defaultImg
+      defaultImg:defaultImg,
+      show:false,
+      title:''
     }
   },
   methods: {
@@ -27,7 +29,15 @@ export default {
     async getComments () {
       const res = await getProComments(this.getGoodsId,3)
       this.comments = res.data
-    }
+    },
+    buyFunction() {
+      this.show = true
+      this.title = '立刻购买'
+    },
+    addFunction() {
+      this.show = true
+      this.title = '加入购物车'
+    },
   },
   computed: {
     getGoodsId () {
@@ -105,13 +115,93 @@ export default {
         <van-icon name="shopping-cart-o" />
         <span>购物车</span>
       </div>
-      <div class="btn-add">加入购物车</div>
-      <div class="btn-buy">立刻购买</div>
+      <div class="btn-add" @click="addFunction">加入购物车</div>
+      <div class="btn-buy" @click="buyFunction">立刻购买</div>
     </div>
+    <!-- 弹层组件-->
+    <van-action-sheet v-model="show" :title="title">
+      <div class="product">
+        <div class="product-title">
+          <div class="left">
+            <img :src="detail.goods_image" alt="">
+          </div>
+          <div class="right">
+            <div class="price">
+              <span>¥</span>
+              <span class="nowprice">{{ detail.goods_price_min }}</span>
+            </div>
+            <div class="count">
+              <span>库存:</span>
+              <span>{{ detail.stock_total }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="num-box">
+          <span>数量</span>
+          数字框占位
+        </div>
+        <div class="showbtn" v-if="detail.stock_total > 0">
+          <div class="btn" v-if="title === '加入购物车'">加入购物车</div>
+          <div class="btn now" v-else>立刻购买</div>
+        </div>
+        <div class="btn-none" v-else>该商品已抢完</div>
+      </div>
+    </van-action-sheet>
   </div>
 </template>
 
 <style scoped lang="less">
+.product {
+  .product-title {
+    display: flex;
+    .left {
+      img {
+        width: 90px;
+        height: 90px;
+      }
+      margin: 10px;
+    }
+    .right {
+      flex: 1;
+      padding: 10px;
+      .price {
+        font-size: 14px;
+        color: #fe560a;
+        .nowprice {
+          font-size: 24px;
+          margin: 0 5px;
+        }
+      }
+    }
+  }
+
+  .num-box {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    align-items: center;
+  }
+
+  .btn, .btn-none {
+    height: 40px;
+    line-height: 40px;
+    margin: 20px;
+    border-radius: 20px;
+    text-align: center;
+    color: rgb(255, 255, 255);
+    background-color: rgb(255, 148, 2);
+  }
+  .btn.now {
+    background-color: #fe5630;
+  }
+  .btn-none {
+    background-color: #cccccc;
+  }
+}
+
+.content {
+  padding: 16px 16px 160px;
+}
 .prodetail {
   padding-top: 46px;
   ::v-deep .van-icon-arrow-left {
