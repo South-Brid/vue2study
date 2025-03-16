@@ -14,7 +14,8 @@ export default {
       },
       defaultImg:defaultImg,
       show:false,
-      title:''
+      title:'',
+      shopNumber:0
     }
   },
   methods: {
@@ -138,7 +139,7 @@ export default {
         </div>
         <div class="num-box">
           <span>数量</span>
-          数字框占位
+          <van-stepper v-model="shopNumber" min="1" :max="detail.stock_total" />
         </div>
         <div class="showbtn" v-if="detail.stock_total > 0">
           <div class="btn" v-if="title === '加入购物车'">加入购物车</div>
