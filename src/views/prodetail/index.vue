@@ -1,6 +1,8 @@
 <script>
 import { getProduct,getProComments } from '@/api/product'
 import defaultImg from '@/assets/default-avatar.png'
+import { Dialog } from 'vant'
+import { addCart } from '@/api/cart'
 export default {
   name: 'ProdetailIndex',
   data () {
@@ -15,7 +17,8 @@ export default {
       defaultImg:defaultImg,
       show:false,
       title:'',
-      shopNumber:0
+      shopNumber:0,
+      cartTotal:0
     }
   },
   methods: {
@@ -39,6 +42,29 @@ export default {
       this.show = true
       this.title = '加入购物车'
     },
+    async addCart() {
+      // 判断token是不是存在 从vuex中取出
+      if (this.$store.getters.getToken) {
+        const res = await addCart(this.getGoodsId,this.shopNumber,this.detail.skuList[0].goods_sku_id) // 发送加入购物车请求
+        this.cartTotal = res.data.cartTotal // 存储购物车角标
+        this.$toast('加入购物车成功')
+        this.show = false
+      } else {
+        Dialog.confirm({
+          title: '提示',
+          message: '登录后才可以操作',
+          confirmButtonText: '登录',       // 修改确定按钮文字
+          cancelButtonText: '再逛逛'        // 修改取消按钮文字
+        }).then(() => {
+          this.$router.replace({
+            path: '/login',
+            query: {  backUrl: this.$route.fullPath }
+          })
+        }).catch(() => {
+          console.log('用户点击了再逛逛');
+        })
+      }
+    }
   },
   computed: {
     getGoodsId () {
@@ -113,9 +139,12 @@ export default {
         <span>首页</span>
       </div>
       <div class="icon-cart">
-        <van-icon name="shopping-cart-o" />
+        <van-badge :content="this.cartTotal">
+          <van-icon name="shopping-cart-o"/>
+        </van-badge>
         <span>购物车</span>
       </div>
+
       <div class="btn-add" @click="addFunction">加入购物车</div>
       <div class="btn-buy" @click="buyFunction">立刻购买</div>
     </div>
@@ -142,7 +171,7 @@ export default {
           <van-stepper v-model="shopNumber" min="1" :max="detail.stock_total" />
         </div>
         <div class="showbtn" v-if="detail.stock_total > 0">
-          <div class="btn" v-if="title === '加入购物车'">加入购物车</div>
+          <div class="btn" v-if="title === '加入购物车'" @click="addCart()">加入购物车</div>
           <div class="btn now" v-else>立刻购买</div>
         </div>
         <div class="btn-none" v-else>该商品已抢完</div>

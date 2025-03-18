@@ -95,8 +95,9 @@ export default {
       console.log('登录状态',res)
       this.$toast.success('登陆成功')
       this.$store.commit('user/setUserInfo', res.data) // 存入vuex中
-      console.log(res)
-      await this.$router.push({ path: '/' })  // 跳转到首页
+      // 判断回跳地址
+      const backUrl =  this.$route.query.backUrl || '/'
+      await this.$router.replace({ path:  backUrl })  // 跳转到首页
     }
   },
   destroyed () {

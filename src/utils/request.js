@@ -1,5 +1,6 @@
 import axios from 'axios'
 import {Toast} from 'vant'
+import store from '@/store'
 // 创建axios实例 对实例进行配置 不会污染axios本身实例
 const request = axios.create({
   baseURL: 'http://smart-shop.itheima.net/index.php?s=/api',
@@ -13,6 +14,11 @@ request.interceptors.request.use(function (config) {
     forbidClick: true,
     duration: 0 // 加载不会自动消失
   })
+  // 添加统一的请求头
+  config.headers = {
+    'Access-Token': store.getters.getToken,
+    'platform': 'H5'
+  }
   return config
 }, function (error) {
   return Promise.reject(error)
