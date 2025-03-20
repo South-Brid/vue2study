@@ -19,6 +19,7 @@ export default {
         query: {  backUrl: this.$route.fullPath }
       })
     }
+
   }
 }
 </script>
