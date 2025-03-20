@@ -12,7 +12,7 @@ export const getInfo = () => {
 }
 // 存储信息到本地中
 export const setInfo = (obj) => {
-  localStorage.setItem(INFO_KEY, JSON.stringify(JSON.stringify(obj)))
+  localStorage.setItem(INFO_KEY, JSON.stringify(obj))
 }
 // 移除本地
 export const  removeInfo = () => {

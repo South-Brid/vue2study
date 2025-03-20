@@ -6,6 +6,7 @@ const state = { // 读取的时候直接读取
 const mutations = {
   // 提供方法设置用户信息
   setUserInfo (state, userInfo) {
+    console.log('mutations',userInfo)
     state.userInfo = userInfo
     setInfo(userInfo) // 存储到本地
   }
