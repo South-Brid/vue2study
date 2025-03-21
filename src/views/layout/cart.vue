@@ -4,9 +4,18 @@ import { mapGetters, mapState } from 'vuex'
 import { Toast } from 'vant';
 export default {
   name: 'LayoutCart',
+  methods: {
+    toggleCheck(id) {
+      // 提交给vuex中的 mutation进行修改
+      this.$store.commit('cart/toggleCheck', id);
+    },
+    toggleAllChecked(flag) {
+      this.$store.commit('cart/toggleAllChecked', flag);
+    }
+  },
   computed: {
     ...mapState('cart', ['cartList']),
-    ...mapGetters('cart',['cartTotal','selectCartList','selectCount','selectPrice'])
+    ...mapGetters('cart',['cartTotal','selectCartList','selectCount','selectPrice','getSelectedAll'])
   },
   created () {
     // 必须登录过的用户，才能使用购物车列表
@@ -19,7 +28,6 @@ export default {
         query: {  backUrl: this.$route.fullPath }
       })
     }
-
   }
 }
 </script>
@@ -38,7 +46,7 @@ export default {
     <!-- 购物车列表 -->
     <div class="cart-list">
       <div class="cart-item" v-for="item in cartList" :key="item.goods_id">
-        <van-checkbox :value="item.isChecked"></van-checkbox>
+        <van-checkbox :value="item.isChecked" @click="toggleCheck(item.goods_id)"></van-checkbox>
         <div class="show">
           <img :src="item.goods.goods_image" alt="">
         </div>
@@ -53,7 +61,7 @@ export default {
     </div>
     <div class="footer-fixed">
       <div  class="all-check">
-        <van-checkbox  icon-size="18"></van-checkbox>
+        <van-checkbox  icon-size="18"  :value= "getSelectedAll" @click="toggleAllChecked(!getSelectedAll)"></van-checkbox>
         全选
       </div>
 
@@ -62,8 +70,9 @@ export default {
           <span>合计：</span>
           <span>¥ <i class="totalPrice"> {{ selectPrice }} </i></span>
         </div>
-        <div v-if="true" class="goPay">结算({{selectCount}})</div>
-        <div v-else class="delete">删除</div>
+        <!--使用:class添加样式类-->
+        <div v-if="true" class="goPay" :class="{disabled: selectCount === 0}">结算({{selectCount}})</div>
+        <div v-else class="delete" :class="{disabled: selectCount === 0}">删除</div>
       </div>
     </div>
   </div>

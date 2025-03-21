@@ -4,9 +4,23 @@ const state = {
   cartList:[]
 }
 const mutations = {
+  // 设置购物车列表
   setCartList(state, payload) {
-    console.log(payload)
     state.cartList = payload
+  },
+  // 修改cartList中的isChecked属性
+  toggleCheck(state, id) {
+    const item = state.cartList.find(item => item.goods_id === id);
+    if (item) {
+      item.isChecked = !item.isChecked;
+    }
+  },
+  // 全选组件
+  toggleAllChecked(state,flag) {
+    state.cartList.forEach(item => {
+      // 将每个项目的 isChecked 反转
+      item.isChecked = flag
+    });
   }
 }
 
@@ -43,7 +57,14 @@ const getters = {
   selectPrice(state,getters) {
     return getters.selectCartList.reduce((total, item) => {
       return total + item.goods.goods_price_min * item.goods_num
-    },0)
+    },0).toFixed(2)
+  },
+  // 获取是不是全选
+  getSelectedAll(state) {
+    if (state.cartList.length === 0) {
+      return false;
+    }
+    return state.cartList.every(item => item.isChecked);
   }
 }
 
