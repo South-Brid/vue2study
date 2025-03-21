@@ -2,6 +2,7 @@
 
 import { mapGetters, mapState } from 'vuex'
 import { Toast } from 'vant';
+
 export default {
   name: 'LayoutCart',
   methods: {
@@ -11,6 +12,14 @@ export default {
     },
     toggleAllChecked(flag) {
       this.$store.commit('cart/toggleAllChecked', flag);
+    },
+    onChange (value,item) {
+      const obj = {
+        goodsId: item.goods_id,
+        goodsNum: value,
+        goodsSkuId:item.goods_sku_id
+      }
+      this.$store.dispatch('cart/updateCartList', obj);
     }
   },
   computed: {
@@ -54,7 +63,7 @@ export default {
           <span class="tit text-ellipsis-2">{{ item.goods.goods_name }}</span>
           <span class="bottom">
             <div class="price">¥ <span>{{ item.goods.goods_price_min}}</span></div>
-            <van-stepper :value = "item.goods_num" integer />
+            <van-stepper @change="(value) => onChange(value,item)" :value = "item.goods_num" integer  />
           </span>
         </div>
       </div>

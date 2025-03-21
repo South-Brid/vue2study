@@ -1,4 +1,4 @@
-import { getCartList } from '@/api/cart'
+import { getCartList, updateCartList } from '@/api/cart'
 
 const state = {
   cartList:[]
@@ -21,16 +21,32 @@ const mutations = {
       // 将每个项目的 isChecked 反转
       item.isChecked = flag
     });
-  }
+  },
+  // 修改本地数据
+  updateCartItemLocally(state, { goodsId, goodsNum, goodsSkuId }) {
+    const item = state.cartList.find(item => {
+      return item.goods_id === goodsId
+    })
+    if (item) {  item.goods_num = goodsNum }
+  },
 }
 
-const actions = { // 异步数据
+const actions = {
+  // 获取购物车列表
   async getCartList (context) {
     const { data } = await getCartList(); // 异步请求
     data.list.forEach((item) => {
       item.isChecked = true  // 默认是全选中
     })
     context.commit('setCartList', data.list)
+  },
+  // 更新购物车数据 乐观更新模式
+  async updateCartList(context,obj) {
+    const { goodsId, goodsNum, goodsSkuId } =  obj
+    // 先本地修改
+    context.commit('updateCartItemLocally', { goodsId, goodsNum, goodsSkuId })
+    // 提交后台
+    await updateCartList(goodsId, goodsNum, goodsSkuId);
   }
 }
 
@@ -44,7 +60,7 @@ const getters = {
   // 获取商品的商品项目
   selectCartList(state) {
     return state.cartList.filter((item) => {
-       return item.isChecked === true
+      return item.isChecked === true
     })
   },
   // 获取选中的商品数
