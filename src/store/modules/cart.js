@@ -1,4 +1,4 @@
-import { getCartList, updateCartList } from '@/api/cart'
+import { deleteCart, getCartList, updateCartList } from '@/api/cart'
 
 const state = {
   cartList:[]
@@ -18,7 +18,6 @@ const mutations = {
   // 全选组件
   toggleAllChecked(state,flag) {
     state.cartList.forEach(item => {
-      // 将每个项目的 isChecked 反转
       item.isChecked = flag
     });
   },
@@ -47,6 +46,12 @@ const actions = {
     context.commit('updateCartItemLocally', { goodsId, goodsNum, goodsSkuId })
     // 提交后台
     await updateCartList(goodsId, goodsNum, goodsSkuId);
+  },
+  async delSelect(context) {
+    const selCartList = context.getters.selectCartList
+    const cartIds =  selCartList.map((item) => { return item.id })
+    await deleteCart(cartIds)
+    await context.dispatch('getCartList')
   }
 }
 

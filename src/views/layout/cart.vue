@@ -5,6 +5,11 @@ import { Toast } from 'vant';
 
 export default {
   name: 'LayoutCart',
+  data(){
+    return {
+      isEdit:false, // 是不是在编辑状态
+    }
+  },
   methods: {
     toggleCheck(id) {
       // 提交给vuex中的 mutation进行修改
@@ -13,23 +18,40 @@ export default {
     toggleAllChecked(flag) {
       this.$store.commit('cart/toggleAllChecked', flag);
     },
-    onChange (value,item) {
+    async onChange (value,item) {
       const obj = {
         goodsId: item.goods_id,
         goodsNum: value,
         goodsSkuId:item.goods_sku_id
       }
-      this.$store.dispatch('cart/updateCartList', obj);
+      await this.$store.dispatch('cart/updateCartList', obj);
+    },
+    // 删除购物车商品
+    async handleDel() {
+      if (this.selectCount === 0) return
+      await this.$store.dispatch('cart/delSelect', this.selectCount);
+      this.isEdit = false;
     }
   },
   computed: {
     ...mapState('cart', ['cartList']),
-    ...mapGetters('cart',['cartTotal','selectCartList','selectCount','selectPrice','getSelectedAll'])
+    ...mapGetters('cart',['cartTotal','selectCartList','selectCount','selectPrice','getSelectedAll']),
+    isLogin() {
+      return this.$store.getters.getToken;
+    }
+  },
+  watch: {
+    // 监视isEdit的状态
+    isEdit(value) {
+      if (value) {
+        // 删除状态去掉选中所有商品
+        this.$store.commit('cart/toggleAllChecked', false)
+      }
+    }
   },
   created () {
     // 必须登录过的用户，才能使用购物车列表
-    const token = this.$store.getters.getToken
-    if (token) { this.$store.dispatch('cart/getCartList')
+    if (this.isLogin) { this.$store.dispatch('cart/getCartList')
     } else {
       Toast.fail('请先登录')
       this.$router.replace({
@@ -44,10 +66,11 @@ export default {
 <template>
   <div class="cart">
     <van-nav-bar title="购物车" fixed />
+    <div v-if="isLogin && cartList.length > 0 ">
     <!-- 购物车开头 -->
     <div class="cart-title">
       <span class="all">共<i>{{ cartTotal }}</i>件商品</span>
-      <span class="edit">
+      <span class="edit" @click="isEdit =!isEdit">
         <van-icon name="edit" />
         编辑
       </span>
@@ -80,14 +103,73 @@ export default {
           <span>¥ <i class="totalPrice"> {{ selectPrice }} </i></span>
         </div>
         <!--使用:class添加样式类-->
-        <div v-if="true" class="goPay" :class="{disabled: selectCount === 0}">结算({{selectCount}})</div>
-        <div v-else class="delete" :class="{disabled: selectCount === 0}">删除</div>
+        <div v-if="!isEdit" class="goPay" :class="{disabled: selectCount === 0}">结算({{selectCount}})</div>
+        <div v-else class="delete" :class="{disabled: selectCount === 0}" @click="handleDel()">删除</div>
       </div>
     </div>
+    </div>
+    <!--空购物车-->
+      <div v-else class="empty-cart">
+        <img src="@/assets/empty.png" alt="空购物车" class="empty-cart-image" />
+        <div class="empty-cart-text">购物车还是空的，去逛逛吧~</div>
+        <van-button type="danger" round size="normal" @click="$router.push('/home')">去购物</van-button>
+      </div>
   </div>
+
 </template>
 
 <style scoped lang="less">
+.empty-cart {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  min-height: calc(100vh - 50px - 44px); /* 减去顶部导航栏和底部导航的高度 */
+}
+
+.empty-cart-image {
+  width: 120px;
+  height: 80px;
+  margin-bottom: 20px;
+}
+
+.empty-cart-text {
+  font-size: 14px;
+  color: #969799;
+  margin-bottom: 30px;
+}
+
+/* Vant按钮样式 */
+.van-button--danger {
+  color: #fff;
+  background-color: #ee0a24;
+  border: 1px solid #ee0a24;
+}
+
+.van-button--normal {
+  padding: 0 15px;
+  font-size: 14px;
+  height: 40px;
+  line-height: 38px;
+}
+
+.van-button--round {
+  border-radius: 999px;
+}
+
+.van-button__content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.van-button__text {
+  text-align: center;
+}
+
 .cart {
   padding-top: 46px;
   padding-bottom: 100px;
