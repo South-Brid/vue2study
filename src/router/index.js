@@ -11,6 +11,7 @@ import LayoutCart from '@/views/layout/cart.vue'
 import LayoutCategory from '@/views/layout/category.vue'
 import LayoutHome from '@/views/layout/home.vue'
 import LayoutUser from '@/views/layout/user.vue'
+import MyAddress from  '@/views/pay/address.vue'
 import store from '@/store'
 
 Vue.use(VueRouter)
@@ -29,6 +30,7 @@ const router = new VueRouter({
     },
     { path: '/login', component: Login },
     { path: '/myorder', component: Myorder },
+    { path: '/myaddress', component: MyAddress },
     { path: '/pay', component: Pay },
     // 为了确认商品是谁，这里使用动态路由传参,在路由中携带id
     { path: '/prodetail/:id', component: Prodetail },

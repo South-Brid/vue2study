@@ -102,7 +102,7 @@
 
     <!-- 提交订单栏 -->
     <van-submit-bar
-        :price="totalPayable * 100"
+        :price="order.orderTotalPrice * 100 "
         button-text="提交订单"
         @submit="onSubmit"
         class="submit-bar"
@@ -116,35 +116,16 @@
 
 <script>
 import { getAddressList } from '@/api/address'
-import { checkOrder } from '@/api/order'
+import { checkOrder, submitOrder } from '@/api/order'
 
 export default {
   name: 'PayIndex',
   data() {
     return {
       addressList:[], // 提供地址容器
-      order:{},
-      personal:{},
-
-      products: [
-        {
-          id: 1,
-          title: '2023新款时尚连衣裙',
-          price: 199.00,
-          image: '/api/placeholder/80/80',
-          specs: '颜色: 白色, 尺码: M',
-          quantity: 1
-        },
-        {
-          id: 2,
-          title: '夏季轻薄透气运动鞋',
-          price: 299.00,
-          image: '/api/placeholder/80/80',
-          specs: '颜色: 黑色, 尺码: 42',
-          quantity: 1
-        }
-      ],
-      remark: '',
+      order:{},       // 订单详情
+      personal:{},    // 人物详情
+      remark: '',     // 留言备注
       paymentMethod: 'wechat',
       shippingFee: 10.00,
       discount: 30.00
@@ -172,7 +153,9 @@ export default {
       return this.$route.query.cartIds
     },
     goodsId() {
-      return this.$route.query.goodsId;
+      const goodsId = this.$route.query.goodsId
+      console.log('buyNow',goodsId)
+      return goodsId;
     },
     goodsSkuId() {
       return this.$route.query.goodsSkuId;
@@ -180,13 +163,11 @@ export default {
     goodsNum() {
       return this.$route.query.goodsNum;
     },
-
-
     totalAmount() {
-      return this.products.reduce((total, item) => total + (item.price * item.quantity), 0);
+
     },
     totalPayable() {
-      return this.totalAmount + this.shippingFee - this.discount;
+
     }
   },
   methods: {
@@ -220,22 +201,32 @@ export default {
     },
     chooseAddress() {
       this.$toast('选择收货地址');
+      this.$router.push('/myaddress');
     },
     chooseCoupon() {
       this.$toast('选择优惠券');
     },
-    onSubmit() {
+    async onSubmit() {
       if (!this.selectAddress.address_id) {
         return this.$toast('请选择收货地址');
       }
-      this.$dialog.confirm({
-        title: '提交订单',
-        message: `确认支付 ¥${this.formatPrice(this.totalPayable)}?`
-      }).then(() => {
-        this.$toast.success('支付成功');
-      }).catch(() => {
-        this.$toast('已取消支付');
-      });
+      if (this.mode === 'cart') {
+        const  res = await  submitOrder(this.mode,{
+          cartIds:this.cartIds,
+          remark: this.remark,
+        })
+        console.log(res)
+      } else if (this.mode === 'buyNow') {
+        const res = await  submitOrder(this.mode,{
+          goodsId:this.goodsId,
+          goodsSkuId:this.goodsSkuId,
+          goodsNum:this.goodsNum,
+          remark: this.remark,
+        })
+        console.log(res)
+      }
+      this.$toast.success('支付成功')
+      this.$router.replace('/myorder')
     }
   }
 }
