@@ -10,7 +10,25 @@ export default {
       isEdit:false, // 是不是在编辑状态
     }
   },
+  computed: {
+    ...mapState('cart', ['cartList']),
+    ...mapGetters('cart',['cartTotal','selectCartList','selectCount','selectPrice','getSelectedAll']),
+    isLogin() {
+      return this.$store.getters.getToken;
+    }
+  },
   methods: {
+    goPay() {
+      if (this.selectCount > 0) {
+        this.$router.push({
+          path:'/pay',
+          query:{
+            mode:'cart',
+            cartIds: this.selectCartList.map(item => item.id).join(',')
+          }
+        });
+      }
+    },
     toggleCheck(id) {
       // 提交给vuex中的 mutation进行修改
       this.$store.commit('cart/toggleCheck', id);
@@ -33,13 +51,7 @@ export default {
       this.isEdit = false;
     }
   },
-  computed: {
-    ...mapState('cart', ['cartList']),
-    ...mapGetters('cart',['cartTotal','selectCartList','selectCount','selectPrice','getSelectedAll']),
-    isLogin() {
-      return this.$store.getters.getToken;
-    }
-  },
+
   watch: {
     // 监视isEdit的状态
     isEdit(value) {
@@ -67,53 +79,53 @@ export default {
   <div class="cart">
     <van-nav-bar title="购物车" fixed />
     <div v-if="isLogin && cartList.length > 0 ">
-    <!-- 购物车开头 -->
-    <div class="cart-title">
-      <span class="all">共<i>{{ cartTotal }}</i>件商品</span>
-      <span class="edit" @click="isEdit =!isEdit">
+      <!-- 购物车开头 -->
+      <div class="cart-title">
+        <span class="all">共<i>{{ cartTotal }}</i>件商品</span>
+        <span class="edit" @click="isEdit =!isEdit">
         <van-icon name="edit" />
         编辑
       </span>
-    </div>
-    <!-- 购物车列表 -->
-    <div class="cart-list">
-      <div class="cart-item" v-for="item in cartList" :key="item.goods_id">
-        <van-checkbox :value="item.isChecked" @click="toggleCheck(item.goods_id)"></van-checkbox>
-        <div class="show">
-          <img :src="item.goods.goods_image" alt="">
-        </div>
-        <div class="info">
-          <span class="tit text-ellipsis-2">{{ item.goods.goods_name }}</span>
-          <span class="bottom">
+      </div>
+      <!-- 购物车列表 -->
+      <div class="cart-list">
+        <div class="cart-item" v-for="item in cartList" :key="item.goods_id">
+          <van-checkbox :value="item.isChecked" @click="toggleCheck(item.goods_id)"></van-checkbox>
+          <div class="show">
+            <img :src="item.goods.goods_image" alt="">
+          </div>
+          <div class="info">
+            <span class="tit text-ellipsis-2">{{ item.goods.goods_name }}</span>
+            <span class="bottom">
             <div class="price">¥ <span>{{ item.goods.goods_price_min}}</span></div>
             <van-stepper @change="(value) => onChange(value,item)" :value = "item.goods_num" integer  />
           </span>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="footer-fixed">
-      <div  class="all-check">
-        <van-checkbox  icon-size="18"  :value= "getSelectedAll" @click="toggleAllChecked(!getSelectedAll)"></van-checkbox>
-        全选
-      </div>
+      <div class="footer-fixed">
+        <div  class="all-check">
+          <van-checkbox  icon-size="18"  :value= "getSelectedAll" @click="toggleAllChecked(!getSelectedAll)"></van-checkbox>
+          全选
+        </div>
 
-      <div class="all-total">
-        <div class="price">
-          <span>合计：</span>
-          <span>¥ <i class="totalPrice"> {{ selectPrice }} </i></span>
+        <div class="all-total">
+          <div class="price">
+            <span>合计：</span>
+            <span>¥ <i class="totalPrice"> {{ selectPrice }} </i></span>
+          </div>
+          <!--使用:class添加样式类-->
+          <div v-if="!isEdit" @click="goPay()" class="goPay" :class="{disabled: selectCount === 0}">结算({{selectCount}})</div>
+          <div v-else class="delete" :class="{disabled: selectCount === 0}" @click="handleDel()">删除</div>
         </div>
-        <!--使用:class添加样式类-->
-        <div v-if="!isEdit" class="goPay" :class="{disabled: selectCount === 0}">结算({{selectCount}})</div>
-        <div v-else class="delete" :class="{disabled: selectCount === 0}" @click="handleDel()">删除</div>
       </div>
-    </div>
     </div>
     <!--空购物车-->
-      <div v-else class="empty-cart">
-        <img src="@/assets/empty.png" alt="空购物车" class="empty-cart-image" />
-        <div class="empty-cart-text">购物车还是空的，去逛逛吧~</div>
-        <van-button type="danger" round size="normal" @click="$router.push('/home')">去购物</van-button>
-      </div>
+    <div v-else class="empty-cart">
+      <img src="@/assets/empty.png" alt="空购物车" class="empty-cart-image" />
+      <div class="empty-cart-text">购物车还是空的，去逛逛吧~</div>
+      <van-button type="danger" round size="normal" @click="$router.push('/home')">去购物</van-button>
+    </div>
   </div>
 
 </template>

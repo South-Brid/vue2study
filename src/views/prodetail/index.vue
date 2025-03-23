@@ -22,6 +22,21 @@ export default {
     }
   },
   methods: {
+    openDialog () {
+      Dialog.confirm({
+        title: '提示',
+        message: '登录后才可以操作',
+        confirmButtonText: '登录',       // 修改确定按钮文字
+        cancelButtonText: '再逛逛'        // 修改取消按钮文字
+      }).then(() => {
+        this.$router.replace({
+          path: '/login',
+          query: {  backUrl: this.$route.fullPath }
+        })
+      }).catch(() => {
+        console.log('用户点击了再逛逛');
+      })
+    },
     onChange (index) {   //用来处理轮播图
       this.current = index
     },
@@ -50,25 +65,31 @@ export default {
         this.$toast('加入购物车成功')
         this.show = false
       } else {
-        Dialog.confirm({
-          title: '提示',
-          message: '登录后才可以操作',
-          confirmButtonText: '登录',       // 修改确定按钮文字
-          cancelButtonText: '再逛逛'        // 修改取消按钮文字
-        }).then(() => {
-          this.$router.replace({
-            path: '/login',
-            query: {  backUrl: this.$route.fullPath }
-          })
-        }).catch(() => {
-          console.log('用户点击了再逛逛');
+        this.openDialog()
+      }
+    },
+    buyNow() {
+      if (this.isLogin) {
+        this.$router.push({
+          path: '/pay',
+          query: {
+            mode:'buyNow',
+            goodsId: this.getGoodsId,
+            goodsSkuId: this.detail.skuList[0].goods_sku_id,
+            goodsNum: this.shopNumber,
+          }
         })
+      } else {
+        this.openDialog()
       }
     }
   },
   computed: {
     getGoodsId () {
       return this.$route.params.id // 动态路由传参
+    },
+    isLogin () {
+      return this.$store.getters.getToken
     }
   },
   created () {
@@ -172,7 +193,7 @@ export default {
         </div>
         <div class="showbtn" v-if="detail.stock_total > 0">
           <div class="btn" v-if="title === '加入购物车'" @click="addCart()">加入购物车</div>
-          <div class="btn now" v-else>立刻购买</div>
+          <div class="btn now" v-else @click="buyNow()">立刻购买</div>
         </div>
         <div class="btn-none" v-else>该商品已抢完</div>
       </div>
