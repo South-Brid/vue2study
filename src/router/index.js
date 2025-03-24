@@ -1,20 +1,23 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Login from '@/views/login/index.vue'
-import Layout from '@/views/layout/index.vue'
-import Myorder from '@/views/myorder/index.vue'
-import Pay from '@/views/pay/index.vue'
-import Prodetail from '@/views/prodetail/index.vue'
-import Search from '@/views/search/index.vue'
-import SearchList from '@/views/search/list.vue'
-import LayoutCart from '@/views/layout/cart.vue'
-import LayoutCategory from '@/views/layout/category.vue'
-import LayoutHome from '@/views/layout/home.vue'
-import LayoutUser from '@/views/layout/user.vue'
-import MyAddress from  '@/views/pay/address.vue'
 import store from '@/store'
 
 Vue.use(VueRouter)
+
+// 使用异步组件懒加载
+const Login = () => import('@/views/login/index.vue')
+const Layout = () => import('@/views/layout/index.vue')
+const Myorder = () => import('@/views/myorder/index.vue')
+const Pay = () => import('@/views/pay/index.vue')
+const Prodetail = () => import('@/views/prodetail/index.vue')
+const Search = () => import('@/views/search/index.vue')
+const SearchList = () => import('@/views/search/list.vue')
+const LayoutCart = () => import('@/views/layout/cart.vue')
+const LayoutCategory = () => import('@/views/layout/category.vue')
+const LayoutHome = () => import('@/views/layout/home.vue')
+const LayoutUser = () => import('@/views/layout/user.vue')
+const MyAddress = () => import('@/views/pay/address.vue')
+
 const router = new VueRouter({
   routes: [
     {
