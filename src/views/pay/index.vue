@@ -226,7 +226,7 @@ export default {
         console.log(res)
       }
       this.$toast.success('支付成功')
-      this.$router.replace('/myorder')
+      await this.$router.replace('/myorder')
     }
   }
 }
